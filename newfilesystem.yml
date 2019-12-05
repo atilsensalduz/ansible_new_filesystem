@@ -10,30 +10,30 @@
         private: no
 
     tasks:
-      - name: volume group olustur
+      - name: create volume group
         lvg:
           vg: vg_{{ filesystem }}
           pvs: "{{ disk }}"
 
-      - name: lvm olustur
+      - name: create lvm
         lvol:
           vg: vg_{{ filesystem }}
           lv: lv_{{ filesystem }}
           size: 100%FREE
 
-      - name: filesystem olustur
+      - name: create new filesystem ext4 
         filesystem:
           fstype: ext4
           dev: /dev/vg_{{ filesystem }}/lv_{{ filesystem }}
         when: ansible_distribution_major_version == '6'
 
-      - name: filesystem olustur
+      - name: create new filesystem xfs
         filesystem:
           fstype: xfs
           dev: /dev/vg_{{ filesystem }}/lv_{{ filesystem }}
         when: ansible_distribution_major_version == '7'
 
-      - name: mount filesystem
+      - name: mount ext4 filesystem
         mount:
           name: /{{ filesystem }}
           src: /dev/vg_{{ filesystem }}/lv_{{ filesystem }}
@@ -41,7 +41,7 @@
           state: mounted
         when: ansible_distribution_major_version == '6'
 
-      - name: mount filesystem
+      - name: mount xfs filesystem
         mount:
           name: /{{ filesystem }}
           src: /dev/vg_{{ filesystem }}/lv_{{ filesystem }}
